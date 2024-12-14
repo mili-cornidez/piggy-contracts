@@ -85,6 +85,6 @@
 Copia .env.example a .env y agrega tu clave privada:
 
     ```bash
-   WALLET_PRIVATE_KEY=tu_clave_privada
-   ```
-Esto asegura que las claves nunca se expongan directamente en el código.
+    WALLET_PRIVATE_KEY=tu_clave_privada
+    ```
+    Esto asegura que las claves nunca se expongan directamente en el código.
