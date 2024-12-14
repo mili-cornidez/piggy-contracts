@@ -1,54 +1,90 @@
-# Custom Paymaster Tutorial 📖
+# PiggyEdu - Recompensas Niveladas con Paymaster en zkSync Era
 
-Welcome aboard to the custom paymaster journey with zkSync! 🚀🌌
+## Descripción del Proyecto
 
-This repository is crafted to guide you through the process of building a custom paymaster on zkSync Era. Coupled with this, you'll find a practical, easy-to-follow guide to implement and understand every step [here](https://era.zksync.io/docs/dev/tutorials/custom-paymaster-tutorial.html).
+* **MyERC20**: Un contrato ERC20 personalizado que se emplea para entregar recompensas a los usuarios.
+* **LevelBadgeNFT (Nivel 1, Nivel 2, Nivel 3)**: Cada NFT representa el nivel alcanzado por el usuario. Si el usuario posee un NFT de mayor nivel, recibe más tokens.
+* **LevelRewards**: Un contrato que libera ERC20 tokens a los usuarios según el nivel del NFT que posean.
+   * Nivel 1: 100 tokens
+   * Nivel 2: 200 tokens
+   * Nivel 3: 300 tokens
+* **MyPaymaster**: Un Paymaster que patrocina las transacciones, evitando que el usuario necesite ETH para pagar gas, mejorando la UX.
 
-## Need Assistance? 💡
+### Flujo Ejemplo:
 
-If you're stumbling upon any issues or uncertainties:
+1. El usuario completa una lección y obtiene un NFT de cierto nivel.
+2. Llama a `claim()` en el contrato `LevelRewards`.
+3. Según el NFT que posea, recibe la cantidad correspondiente de tokens ERC20.
+4. El Paymaster puede cubrir el costo de gas, permitiendo al usuario obtener sus recompensas sin usar ETH.
 
-- 📖 Explore the [custom paymaster tutorial](https://era.zksync.io/docs/dev/tutorials/custom-paymaster-tutorial.html) for a comprehensive walkthrough of the code in this repository.
-- 🗣️ Or simply [reach out on Discord](https://join.zksync.dev/). We're always here to help!
+## Tecnologías Utilizadas
 
-## Repository Overview 📂
+* **Solidity**: Lenguaje para contratos inteligentes.
+* **zkSync Era**: L2 con zkRollups que ofrece Account Abstraction.
+* **Hardhat**: Entorno de desarrollo, compilación y pruebas.
+* **OpenZeppelin**: Librerías estándar para ERC20, ERC721 y utilidades.
 
-Dive into the key sections of this repository:
+## Estructura del Repositorio
 
-- `/contracts`: All the essential smart contracts you need are neatly stored here.
+* `contracts/`
+   * `MyERC20.sol`: Contrato ERC20 personalizado.
+   * `LevelBadgeNFT.sol`: Contratos para NFT de distintos niveles.
+   * `LevelRewards.sol`: Lógica de distribución de recompensas basada en la posesión de NFTs.
+   * `MyPaymaster.sol`: Lógica del Paymaster para patrocinar transacciones.
+* `deploy/`
+   * `deploy-level-badges.ts`: Script para desplegar los NFTs.
+   * `deploy-paymaster.ts`: Script para desplegar y financiar el Paymaster.
+   * `deploy-level-rewards.ts`: Script para desplegar el contrato de recompensas usando las direcciones existentes.
+* `test/`: Pruebas unitarias para los contratos.
 
-- `/deploy`: Discover deployment and usage scripts tailored to assist your development process.
+## Pasos de Despliegue
 
-- `/test`: Unit tests for the provided contracts.
+1. **Instalación de dependencias:**
 
-## Handy Commands 🛠️
+   ```bash
+   yarn install
+   ```
 
-Here's a lineup of commands to assist you:
 
-- `yarn install`: Installs the required dependencies.
-- `yarn compile`: Compiles the contracts.
-- `yarn deploy-pm`: Deploys your contracts smoothly.
-- `yarn use-pm`: Executes the `use-paymaster.ts` script.
-- `yarn test`: Runs tests.
+2. **Compilación de contratos:**
 
-### Environment variables 🌳
+    ```bash
+   yarn compile
+   ```
 
-To prevent the leakage of private keys, we use the `dotenv` package to load environment variables. This is particularly used to load the wallet private key, which is required to run the deployment script.
+3. **Desplegar NFTs de nivel:**
 
-To use it, rename `.env.example` to `.env` and input your private key.
+    ```bash
+   yarn deploy-level-badges
+   ```
+    Esto mostrará las direcciones de Level 1, Level 2 y Level 3 NFTs.
 
-```
-WALLET_PRIVATE_KEY=123cde574ccff....
-```
+4. **Desplegar Paymaster:**
 
-### Local testing 🧪
+    ```bash
+   yarn deploy-paymaster
+   ```
+    Este script desplegará el Paymaster y lo financiará con ETH y tokens.
 
-Local tests make use of the in-memory-node thanks to the `hardhat-zksync-node` plugin. Please refer to [this section of the docs](https://era.zksync.io/docs/tools/testing/) for more details.
+5. **Desplegar LevelRewards:** Ajusta las direcciones del ERC20 y los NFT en deploy-level-rewards.ts y luego:
 
-## Stay Connected 🌐
+    ```bash
+   yarn deploy-level-rewards
+   ```
 
-- [zkSync's Documentation](https://era.zksync.io/docs/)
-- [GitHub](https://github.com/matter-labs)
-- [Twitter @zkSync](https://twitter.com/zksync)
-- [Twitter @zkSyncDevs](https://twitter.com/zkSyncDevs)
-- [Join our Discord Community](https://join.zksync.dev)
+## Uso
+
+1. **Reclamar Recompensas:** Un usuario con un NFT llama a claim() en LevelRewards.
+    Si tiene Level 1: recibe 100 tokens.
+    Si tiene Level 2: recibe 200 tokens.
+    Si tiene Level 3: recibe 300 tokens.
+
+2. **Paymaster:** Si el Paymaster está configurado, las transacciones del usuario pueden ser patrocinadas. Esto significa que no necesita ETH, mejorando la experiencia.
+
+## Variables de Entorno
+Copia .env.example a .env y agrega tu clave privada:
+
+    ```makefile
+   WALLET_PRIVATE_KEY=tu_clave_privada
+   ```
+Esto asegura que las claves nunca se expongan directamente en el código.
